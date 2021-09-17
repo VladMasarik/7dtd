@@ -22,6 +22,15 @@ lootContainers = xml.dom.minidom.parse(loot).documentElement.getElementsByTagNam
 lootGroups = xml.dom.minidom.parse(loot).documentElement.getElementsByTagName("lootgroup")
 blocks = xml.dom.minidom.parse(blocks).documentElement.getElementsByTagName("block")
 
+
+def getHumanNames():
+    names = {}
+    with open(localization,'r') as f: # input csv file
+        reader = csv.DictReader(f, delimiter=',')
+        for row in reader:
+            names[row["Key"]] = row["english"]
+    return names
+
 def getItemNames(itemsAndGroups):
     """
     :param itemsAndGroups: list of XML elements in a lootgroup
@@ -119,12 +128,16 @@ def buildJSONLootGroups(lootGroups):
 def buildJSONBlocks(blocks):
     result = {}
     for block in blocks:
-        name = block.getAttribute("name")
+        blockName = block.getAttribute("name")
         blockContents = getLootPerBlock(block)
         if blockContents is None:
             continue
         else:
-            result[name] = blockContents.copy() # We cant use the same object, as we are later adding human readable names to all of them
+            result[blockName] = blockContents.copy() # We cant use the same object, as we are later adding human readable names to all of them
+            if blockName in humanNames.keys():
+                result[blockName]["humanName"] = humanNames[blockName]
+            else:
+                print("Following block that contains loot doesn't have a human readable name:", blockName)
     return result
 
 
@@ -145,6 +158,7 @@ def getLootPerBlock(block):
 
 
 
+humanNames = getHumanNames()
 
 allGroups = buildJSONLootGroups(lootGroups)
 
@@ -153,13 +167,18 @@ containers = buildJSONContainers(lootContainers)
 blocks = buildJSONBlocks(blocks)
 
 
+# for name in blocks:
+#     if name in keys:
+#         blocks[name]["humanName"] = names[name]
 
-with open(localization,'r') as f: # input csv file
-    reader = csv.DictReader(f, delimiter=',') # Key,File,Type,UsedInMainMenu,NoTranslate,english,
-    keys = blocks.keys()
-    for row in reader:
-        if row["Key"] in keys:
-            blocks[row["Key"]]["humanName"] = row["english"]
+
+
+# with open(localization,'r') as f: # input csv file
+#     reader = csv.DictReader(f, delimiter=',') # Key,File,Type,UsedInMainMenu,NoTranslate,english,
+#     keys = blocks.keys()
+#     for row in reader:
+#         if row["Key"] in keys:
+#             blocks[row["Key"]]["humanName"] = row["english"]
 
 
 x = 1
