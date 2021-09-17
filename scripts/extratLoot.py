@@ -20,6 +20,7 @@ loot = "config/loot.xml"
 extractedContainersFile = "extractedLoot/containers.json"
 extractedBlocksFile = "extractedLoot/blocks.json"
 extractedItemsFile = "extractedLoot/items.json"
+extractedItemsFileHumanNames = "extractedLoot/items-human-name.json"
 
 
 lootContainers = xml.dom.minidom.parse(loot).documentElement.getElementsByTagName("lootcontainer")
@@ -192,6 +193,16 @@ def getAllGameItems(containers):
         allItems.update(containers[name]["allItems"])
     return allItems
 
+def getAllGameItemsHumanNames(allGameItems):
+    """
+    :param containers: dictionary of containers
+    :returns: Dictionary of human readable item names
+    """
+    allNames = list()
+    for name in allGameItems:
+        allNames.append(allGameItems[name])
+    return allNames
+
 
 
 
@@ -208,6 +219,7 @@ containers = buildJSONContainers(lootContainers)
 blocks = buildJSONBlocks(blocks)
 
 allGameItems = getAllGameItems(containers)
+allGameItemsHumanNames = getAllGameItemsHumanNames(allGameItems)
 
 
 
@@ -215,4 +227,5 @@ allGameItems = getAllGameItems(containers)
 
 # writeData(allGameItems, extractedItemsFile)
 # writeData(blocks, extractedBlocksFile)
+# writeData(allGameItemsHumanNames, extractedItemsFileHumanNames)
 

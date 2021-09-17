@@ -11,6 +11,113 @@
 	<label for="item">Item Name:</label><br>
 	<input type="text" id="item" name="item">
 </div>
+<div>
+	<label for="block">Block Name:</label><br>
+	<input type="text" id="block" name="block">
+</div>
+<div id="groups">
+	<lu>
+		<li></li>
+	</lu>
+</div>
+<div id="items">
+	<lu>
+		<li></li>
+	</lu>
+</div>
+
+<div id="blocks">
+	<lu>
+		<li></li>
+	</lu>
+</div>
 <body>
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/autoComplete.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/css/autoComplete.02.css">
+
+
+<script>
+	function me() {
+		var calls = [
+			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/blocks.json'),
+			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/items.json'),
+		]
+		Promise.all(calls).then(() => {
+			blocks = calls[0].responseJSON
+			items = calls[1].responseJSON
+			console.log(blocks)
+			console.log(items)
+			var availableTags = [
+				"ActionScript",
+				"AppleScript",
+				"Asp",
+				"BASIC",
+				"C",
+				"C++",
+				"Clojure",
+				"COBOL",
+				"ColdFusion",
+				"Erlang",
+				"Fortran",
+				"Groovy",
+				"Haskell",
+				"Java",
+				"JavaScript",
+				"Lisp",
+				"Perl",
+				"PHP",
+				"Python",
+				"Ruby",
+				"Scala",
+				"Scheme"
+			];
+
+			const autoCompleteJS = new autoComplete({
+				data:{
+					src:availableTags,
+				},
+				selector:"#item",
+				resultsList: cssResultList,
+				resultItem: cssResultItem,
+
+			});
+    
+
+			// AutoComplete({
+			// 	EmptyMessage: "No item found",
+			// }, "#autocomplete-example");
+		})
+	}
+	
+	var cssResultItem = {
+		element: (item, data) => {
+		// Modify Results Item Style
+		item.style = "display: flex; justify-content: space-between;";
+		// Modify Results Item Content
+		item.innerHTML = `
+		<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+			${data.match}
+		</span>`;
+		},
+		highlight: true
+	}
+	var cssResultList = {
+		element: (list, data) => {
+			if (!data.results.length) {
+				// Create "No Results" message list element
+				const message = document.createElement("div");
+				message.setAttribute("class", "no_result");
+				// Add message text content
+				message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+				// Add message list element to the list
+				list.appendChild(message);
+			}
+		},
+		noResults: true
+	}
+	me()
+	
+</script>
 </html>
