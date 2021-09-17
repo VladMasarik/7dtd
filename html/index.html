@@ -60,12 +60,20 @@
 				selector:"#item",
 				resultsList: cssResultList,
 				resultItem: cssResultItem,
+				events: { // For some reason this cannot be extracted as its own variable
+					input: {
+						selection: (event) => {
+							const selection = event.detail.selection.value;
+							autoCompleteJS.input.value = selection;
+						}
+					}
+				}
 
 			});
 		})
 	}
 	
-	var cssResultItem = {
+	var cssResultItem = { // Matches the letters, and highlights
 		element: (item, data) => {
 		// Modify Results Item Style
 		item.style = "display: flex; justify-content: space-between;";
@@ -77,7 +85,7 @@
 		},
 		highlight: true
 	}
-	var cssResultList = {
+	var cssResultList = { // Shows the number of matched results, and when there are no matches
 		element: (list, data) => {
 			if (!data.results.length) {
 				// Create "No Results" message list element
@@ -88,10 +96,21 @@
 				// Add message list element to the list
 				list.appendChild(message);
 			}
+
+			const info = document.createElement("p");
+			if (data.results.length > 0) {
+				info.innerHTML = `Displaying <strong>${data.results.length}</strong> out of <strong>${data.matches.length}</strong> results`;
+			} else {
+				info.innerHTML = `Found <strong>${data.matches.length}</strong> matching results for <strong>"${data.query}"</strong>`;
+			}
+			list.prepend(info);
 		},
 		noResults: true,
-		maxResults: 30
+		maxResults: 30,
+		destination: "#item"
 	}
+
+
 	me()
 	
 </script>
