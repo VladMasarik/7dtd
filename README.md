@@ -28,3 +28,6 @@ cntCar03SedanDamage0Master
 cntCar03SedanDamage1Master
 ```
 are a parent loot containers for most of the cars, but they have identical loot AFAIK
+
+## Duplicate names
+If you see duplicate names, there is a high chance that the resulting loot or blocks will be identical, so dont worry about it too much.

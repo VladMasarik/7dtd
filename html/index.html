@@ -7,35 +7,75 @@
 	<meta charset='utf-8' />
 	<link rel="stylesheet" href="style/main.css">
 </head>
-<div>
-	<label for="item">Item Name:</label><br>
-	<input type="text" id="item" name="item">
-</div>
-<div>
-	<label for="block">Block Name:</label><br>
-	<input type="text" id="block" name="block">
-</div>
-<div id="groups">
-	<lu>
-		<li></li>
-	</lu>
-</div>
-<div id="items">
-	<lu>
-		<li></li>
-	</lu>
-</div>
-
-<div id="blocks">
-	<lu>
-		<li></li>
-	</lu>
-</div>
 <body>
+
+
+
+	<div>
+		<span class="input-group w-25">
+			<label for="item">Human Item Name:</label>
+			<input type="text" id="item" name="item" class="form-control">
+			<label for="dev-item">Developer Item Name:</label>
+			<input type="text" id="dev-item" name="dev-item" class="form-control">
+		</span>
+	</div>
+	<div>
+		<div class="input-group w-25">
+			<label for="block">Human Block Name:</label>
+			<input type="text" id="block" name="block" class="form-control">
+			<label for="dev-block">Developer Block Name:</label>
+			<input type="text" id="dev-block" name="dev-block" class="form-control">
+		</div>
+	</div>
+	<form class="form-inline" action="/action_page.php">
+		<label for="email">Email:</label>
+		<input type="email" id="email" 
+			  placeholder="Enter email" name="email">
+	
+		<label for="pwd">Password:</label>
+		<input type="password" id="pwd" 
+			  placeholder="Enter password" name="pswd">
+	
+	  </form>
+	
+	<div id="groups">
+		<lu>
+			<li></li>
+		</lu>
+	</div>
+	<div id="items">
+		<lu>
+			<li></li>
+		</lu>
+	</div>
+	
+	<div id="blocks">
+		<lu>
+			<li></li>
+		</lu>
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/autoComplete.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/css/autoComplete.02.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
 
 
 <script>
@@ -50,7 +90,7 @@
 			blocks = calls[0].responseJSON
 			items = calls[1].responseJSON
 			itemsHumanName = calls[2].responseJSON
-			blocksHumanName = calls[2].responseJSON
+			blocksHumanName = calls[3].responseJSON
 			console.log(blocks)
 			console.log(items)
 			console.log(itemsHumanName)
@@ -76,7 +116,7 @@
 
 			const autoCompleteJSBlocks = new autoComplete({
 				data:{
-					src:itemsHumanName,
+					src:blocksHumanName,
 				},
 				selector:"#block",
 				resultsList: cssResultList,
