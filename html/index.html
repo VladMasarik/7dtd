@@ -43,51 +43,25 @@
 		var calls = [
 			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/blocks.json'),
 			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/items.json'),
+			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/items-human-name.json'),
 		]
 		Promise.all(calls).then(() => {
 			blocks = calls[0].responseJSON
 			items = calls[1].responseJSON
+			itemsHumanName = calls[2].responseJSON
 			console.log(blocks)
 			console.log(items)
-			var availableTags = [
-				"ActionScript",
-				"AppleScript",
-				"Asp",
-				"BASIC",
-				"C",
-				"C++",
-				"Clojure",
-				"COBOL",
-				"ColdFusion",
-				"Erlang",
-				"Fortran",
-				"Groovy",
-				"Haskell",
-				"Java",
-				"JavaScript",
-				"Lisp",
-				"Perl",
-				"PHP",
-				"Python",
-				"Ruby",
-				"Scala",
-				"Scheme"
-			];
+			console.log(itemsHumanName)
 
 			const autoCompleteJS = new autoComplete({
 				data:{
-					src:availableTags,
+					src:itemsHumanName,
 				},
 				selector:"#item",
 				resultsList: cssResultList,
 				resultItem: cssResultItem,
 
 			});
-    
-
-			// AutoComplete({
-			// 	EmptyMessage: "No item found",
-			// }, "#autocomplete-example");
 		})
 	}
 	
@@ -115,7 +89,8 @@
 				list.appendChild(message);
 			}
 		},
-		noResults: true
+		noResults: true,
+		maxResults: 30
 	}
 	me()
 	

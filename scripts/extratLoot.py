@@ -220,7 +220,7 @@ blocks = buildJSONBlocks(blocks)
 
 allGameItems = getAllGameItems(containers)
 allGameItemsHumanNames = getAllGameItemsHumanNames(allGameItems)
-
+allGameItemsHumanNames.sort()
 
 
 ## Comment out when not actually needed.
