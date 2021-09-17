@@ -211,9 +211,8 @@ allGameItems = getAllGameItems(containers)
 
 
 
+## Comment out when not actually needed.
 
-writeData(allGameItems, extractedItemsFile)
-writeData(blocks, extractedBlocksFile)
+# writeData(allGameItems, extractedItemsFile)
+# writeData(blocks, extractedBlocksFile)
 
-
-x = 1
