@@ -1,7 +1,7 @@
 from xml.dom.minidom import parse
 import xml.dom.minidom
 import csv
-
+import json
 
 
 """
@@ -17,6 +17,10 @@ blocks = "config/blocks.xml"
 localization = "config/Localization.txt"
 loot = "config/loot.xml"
 
+extractedContainersFile = "extractedLoot/containers.json"
+extractedBlocksFile = "extractedLoot/blocks.json"
+extractedItemsFile = "extractedLoot/items.json"
+
 
 lootContainers = xml.dom.minidom.parse(loot).documentElement.getElementsByTagName("lootcontainer")
 lootGroups = xml.dom.minidom.parse(loot).documentElement.getElementsByTagName("lootgroup")
@@ -24,6 +28,9 @@ blocks = xml.dom.minidom.parse(blocks).documentElement.getElementsByTagName("blo
 
 
 def getHumanNames():
+    """
+    :returns: Dictionary of names and human readable names; names being object names used in the developers code
+    """
     names = {}
     with open(localization,'r') as f: # input csv file
         reader = csv.DictReader(f, delimiter=',')
@@ -36,10 +43,13 @@ def getItemNames(itemsAndGroups):
     :param itemsAndGroups: list of XML elements in a lootgroup
     :returns: list of strings for just items
     """
-    itemNames = list()
+    itemNames = {}
     for element in itemsAndGroups:
         if element.hasAttribute("name"):
-            itemNames.append(element.getAttribute("name"))
+            if element.getAttribute("name") in humanNames.keys():
+                itemNames[element.getAttribute("name")] = humanNames[element.getAttribute("name")]
+            else:
+                print("The following item doesn't have a human readable name:", element.getAttribute("name")) # These are usually Development items
     return itemNames
 
 
@@ -57,7 +67,7 @@ def getGroupNames(itemsAndGroups):
 
 def getItemsRecursive(group):
     """
-    Flattens all of the groups, and returns just the items within the group.
+    Flattens all of the groups, and returns just the items within the group. Meaning that if the lootContainer has a tree strucutre of what it containes, with Items being the leafs, and nodes being lootGroups, we try to extract only the items.
 
     :param group: XML group element
     :returns: list of item names extracted from all the groups inside the given group + items of the given group
@@ -66,12 +76,12 @@ def getItemsRecursive(group):
     gg = group.getAttribute("name")
 
     items = getItemNames(itemsAndGroups) # items of the group
-    childItems = list()
 
     childGroups = getGroupNames(itemsAndGroups)
     for groupName in childGroups:
-        childItems = childItems + getItemsRecursive(findXMLGroup(groupName)) # all items of the child groups
-    return items + childItems
+        childItems = getItemsRecursive(findXMLGroup(groupName))
+        items.update(childItems) # all items of the child groups
+    return items
 
 
 
@@ -87,6 +97,10 @@ def findXMLGroup(groupName):
 
 
 def buildJSONContainers(lootContainers):
+    """
+    :param lootContainers: all XML elements of type "lootContainers", basically anything that can be looted
+    :returns: Dictionary of items, groups, and "allItems" that the loot container provides
+    """
     result = {}
     for group in lootContainers:
         id = group.getAttribute("id")
@@ -95,7 +109,6 @@ def buildJSONContainers(lootContainers):
         items = getItemNames(itemsAndGroups)
         childGroups = getGroupNames(itemsAndGroups)
         allItems = getItemsRecursive(group)
-        allItems = list(set(allItems)) # Get rid of duplicates
 
         result[id] = {
             "items": items,
@@ -106,6 +119,10 @@ def buildJSONContainers(lootContainers):
 
 
 def buildJSONLootGroups(lootGroups):
+    """
+    :param lootGroups: all XML elements of type "lootGroups", so every grouping of items
+    :returns: Dictionary of items, groups, and "allItems" that the loot group contains
+    """
     result = {}
     for group in lootGroups:
         name = group.getAttribute("name")
@@ -114,7 +131,6 @@ def buildJSONLootGroups(lootGroups):
         items = getItemNames(itemsAndGroups)
         childGroups = getGroupNames(itemsAndGroups)
         allItems = getItemsRecursive(group)
-        allItems = list(set(allItems)) # Get rid of duplicates
 
         result[name] = {
             "items": items,
@@ -126,6 +142,10 @@ def buildJSONLootGroups(lootGroups):
 
 
 def buildJSONBlocks(blocks):
+    """
+    :param blocks: all XML elements of type "blocks", so every block that is in the game
+    :returns: Dictionary of items, groups, and "allItems" that the loot group contains
+    """
     result = {}
     for block in blocks:
         blockName = block.getAttribute("name")
@@ -137,26 +157,47 @@ def buildJSONBlocks(blocks):
             if blockName in humanNames.keys():
                 result[blockName]["humanName"] = humanNames[blockName]
             else:
-                print("Following block that contains loot doesn't have a human readable name:", blockName)
+                print("Following block that contains loot doesn't have a human readable name:", blockName) # Possibly parent blocks from which some blocks inherit the loot
     return result
 
 
 def getLootPerBlock(block):
     """
     :param groupName: block XML element
-    :returns: dictionary of what loot belongs to this block
+    :returns: dictionary of what loot belongs to this block OR "None" if the block has no loot
     """
-    id = None
+    id = getLootListID(block)
+    if id is None:
+        return None
+    return containers[id]
+
+def getLootListID(block):
+    """
+    :param block: block XML element
+    :returns: "None" if the block doenst have a loot OR "LootList" value, which is basically the ID of the loot that it is supposed to contain
+    """
     properties = block.getElementsByTagName("property")
     for element in properties:
-        if element.getAttribute("name") == "LootList":
-            id = element.getAttribute("value")
-            return containers[id]
+        if element.getAttribute("name") == "LootList": # Only consider blocks that have loot
+            return element.getAttribute("value")
     return None
 
+def getAllGameItems(containers):
+    """
+    :param containers: dictionary of containers
+    :returns: Dictionary of all the possible items within those containers
+    """
+    allItems = {}
+    for name in containers:
+        allItems.update(containers[name]["allItems"])
+    return allItems
 
 
 
+
+def writeData(data, fileName):
+    with open(fileName,'w') as f:
+        json.dump(data, f, sort_keys=True, indent=2)
 
 humanNames = getHumanNames()
 
@@ -166,19 +207,13 @@ containers = buildJSONContainers(lootContainers)
 
 blocks = buildJSONBlocks(blocks)
 
-
-# for name in blocks:
-#     if name in keys:
-#         blocks[name]["humanName"] = names[name]
+allGameItems = getAllGameItems(containers)
 
 
 
-# with open(localization,'r') as f: # input csv file
-#     reader = csv.DictReader(f, delimiter=',') # Key,File,Type,UsedInMainMenu,NoTranslate,english,
-#     keys = blocks.keys()
-#     for row in reader:
-#         if row["Key"] in keys:
-#             blocks[row["Key"]]["humanName"] = row["english"]
+
+writeData(allGameItems, extractedItemsFile)
+writeData(blocks, extractedBlocksFile)
 
 
 x = 1

@@ -9,7 +9,15 @@ as in there are different objects, but they can have the same loot, but there ar
 Write human readable name, you get to choose a real name, and click on that to get the loot. The loot is free of duplicates
 
 ## Get containers where you can find this item
-Write the human readable name, choose real name, than you get to show the human readable container names which are free of duplicates
+Write the human readable name, choose real name, than you get to show the human readable block names which are free of duplicates that contain that item
+
+## Get groups where this item is contained
+
+## Get containers where you can find this group
+
+## Be able to click on another item / group / container, and autofill the search field
+
+## Have the search in the website parameters, so that you can always return to the previous result
 
 # Notes
 ## Missing containers
