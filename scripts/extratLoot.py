@@ -124,7 +124,7 @@ def buildJSONBlocks(blocks):
         if blockContents is None:
             continue
         else:
-            result[name] = blockContents
+            result[name] = blockContents.copy()
     return result
 
 
@@ -139,6 +139,7 @@ def getLootPerBlock(block):
         if element.getAttribute("name") == "LootList":
             id = element.getAttribute("value")
             return containers[id]
+    return None
 
 
 # f1 = open ("report.csv","r") # open input file for reading 
@@ -214,8 +215,6 @@ x4 = names["cntStorageChest"]
 for name in blocks:
     if name in keys:
         if name in ["cntSecureStorageChest", "cntStorageChest", "metalSheetRandomHelper", "woodSheetRandomHelper"]:
-            name_block = blocks[name] #ENED HERE! The blocks[name] are the same object on multiple keys, so updating one key changes others as well. Find how to create duplicates or copies
-            name_human = names[name]
             blocks[name]["humanName"] = names[name]
 
 
