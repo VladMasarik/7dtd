@@ -124,7 +124,7 @@ def buildJSONBlocks(blocks):
         if blockContents is None:
             continue
         else:
-            result[name] = blockContents.copy()
+            result[name] = blockContents.copy() # We cant use the same object, as we are later adding human readable names to all of them
     return result
 
 
@@ -142,25 +142,6 @@ def getLootPerBlock(block):
     return None
 
 
-# f1 = open ("report.csv","r") # open input file for reading 
-# users_dict = {}
-# with open('out.csv', 'wb') as f: # output csv file
-#     writer = csv.writer(f)
-#     with open('report.csv','r') as csvfile: # input csv file
-#         reader = csv.DictReader(csvfile, delimiter=',')
-#         for row in reader:
-#             print row['User Name'],row['Address'].split(',')[0],row['Last Login DateTime'],row['Address'].split(',')[7]
-#             users_dict.update(row)
-#             #users_list.append(row['Address'].split(','))
-#             #users_list.append(row['Last Login DateTime'])
-#             #users_list.append(row[5].split(',')[7])
-
-#     print users_dict
-
-# f1.close()
-
-# Key,File,Type,UsedInMainMenu,NoTranslate,english,
-
 
 
 
@@ -173,49 +154,12 @@ blocks = buildJSONBlocks(blocks)
 
 
 
-# with open(localization,'r') as f: # input csv file
-#     reader = csv.DictReader(f, delimiter=',')
-#     keys = blocks.keys()
-#     x = list(keys)
-#     for row in reader:
-#         if row["Key"] in keys:
-#             q = row["Key"]
-#             qq = row["english"]
-#             qq_rk = row["Key"]
-#             qq_re = row["english"]
-#             qqq = blocks[qq_rk]
-#             blocks[qq_rk]["humanName"] = qq_re
-
-names = {}
-
 with open(localization,'r') as f: # input csv file
-    reader = csv.DictReader(f, delimiter=',')
+    reader = csv.DictReader(f, delimiter=',') # Key,File,Type,UsedInMainMenu,NoTranslate,english,
+    keys = blocks.keys()
     for row in reader:
-        names[row["Key"]] = row["english"]
-
-keys = names.keys()
-
-# cntStorageChest
-# cntSecureStorageChest
-
-# Key,UsedInMainMenu,NoTranslate,english,
-
-# woodSheetRandomHelper
-# woodSheetRandomHelper,,,= Wood Fence / Sheet = Random Helper,
-
-# metalSheetRandomHelper
-# metalSheetRandomHelper,,,= Metal Sheet = Random Helper,
-
-x1 = names["woodSheetRandomHelper"]
-x2 = names["metalSheetRandomHelper"]
-x3 = names["cntSecureStorageChest"]
-x4 = names["cntStorageChest"]
-
-
-for name in blocks:
-    if name in keys:
-        if name in ["cntSecureStorageChest", "cntStorageChest", "metalSheetRandomHelper", "woodSheetRandomHelper"]:
-            blocks[name]["humanName"] = names[name]
+        if row["Key"] in keys:
+            blocks[row["Key"]]["humanName"] = row["english"]
 
 
 x = 1
