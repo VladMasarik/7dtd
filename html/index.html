@@ -44,16 +44,19 @@
 			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/blocks.json'),
 			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/items.json'),
 			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/items-human-name.json'),
+			$.getJSON('https://raw.githubusercontent.com/VladMasarik/7dtd/main/extractedLoot/blocks-human-name.json'),
 		]
 		Promise.all(calls).then(() => {
 			blocks = calls[0].responseJSON
 			items = calls[1].responseJSON
 			itemsHumanName = calls[2].responseJSON
+			blocksHumanName = calls[2].responseJSON
 			console.log(blocks)
 			console.log(items)
 			console.log(itemsHumanName)
+			console.log(blocksHumanName)
 
-			const autoCompleteJS = new autoComplete({
+			const autoCompleteJSItems = new autoComplete({
 				data:{
 					src:itemsHumanName,
 				},
@@ -64,7 +67,25 @@
 					input: {
 						selection: (event) => {
 							const selection = event.detail.selection.value;
-							autoCompleteJS.input.value = selection;
+							autoCompleteJSItems.input.value = selection;
+						}
+					}
+				}
+
+			});
+
+			const autoCompleteJSBlocks = new autoComplete({
+				data:{
+					src:itemsHumanName,
+				},
+				selector:"#block",
+				resultsList: cssResultList,
+				resultItem: cssResultItem,
+				events: { // For some reason this cannot be extracted as its own variable
+					input: {
+						selection: (event) => {
+							const selection = event.detail.selection.value;
+							autoCompleteJSBlocks.input.value = selection;
 						}
 					}
 				}

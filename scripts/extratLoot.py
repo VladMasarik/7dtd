@@ -21,6 +21,7 @@ extractedContainersFile = "extractedLoot/containers.json"
 extractedBlocksFile = "extractedLoot/blocks.json"
 extractedItemsFile = "extractedLoot/items.json"
 extractedItemsFileHumanNames = "extractedLoot/items-human-name.json"
+extractedBlocksFileHumanNames = "extractedLoot/blocks-human-name.json"
 
 
 lootContainers = xml.dom.minidom.parse(loot).documentElement.getElementsByTagName("lootcontainer")
@@ -159,6 +160,18 @@ def buildJSONBlocks(blocks):
                 result[blockName]["humanName"] = humanNames[blockName]
             else:
                 print("Following block that contains loot doesn't have a human readable name:", blockName) # Possibly parent blocks from which some blocks inherit the loot
+                
+                # There is not that many parent blocks, so we at least try to hardcode their names
+                if blockName == "cntCar03SedanDamage0Master":
+                    result[blockName]["humanName"] = "Sedan Car v0"
+                elif blockName == "cntCar03SedanDamage1Master":
+                    result[blockName]["humanName"] = "Sedan Car v1"
+                elif blockName == "cntQuestLootBox":
+                    result[blockName]["humanName"] = "XXX Deprecated Block"
+                elif blockName == "cntBarrelMetalMaster":
+                    result[blockName]["humanName"] = "Rusty Barrel"
+                elif blockName == "cntBarrelPolymerMaster":
+                    result[blockName]["humanName"] = "Plastic Barrel"
     return result
 
 
@@ -203,6 +216,15 @@ def getAllGameItemsHumanNames(allGameItems):
         allNames.append(allGameItems[name])
     return allNames
 
+def getBlocksHumanNames(blocks):
+    """
+    :param containers: dictionary of containers
+    :returns: Dictionary of human readable item names
+    """
+    allNames = list()
+    for name in blocks:
+        allNames.append(blocks[name]["humanName"])
+    return allNames
 
 
 
@@ -222,10 +244,14 @@ allGameItems = getAllGameItems(containers)
 allGameItemsHumanNames = getAllGameItemsHumanNames(allGameItems)
 allGameItemsHumanNames.sort()
 
+blocksHumanNames = getBlocksHumanNames(blocks)
+blocksHumanNames.sort()
+
 
 ## Comment out when not actually needed.
 
 # writeData(allGameItems, extractedItemsFile)
 # writeData(blocks, extractedBlocksFile)
 # writeData(allGameItemsHumanNames, extractedItemsFileHumanNames)
+# writeData(blocksHumanNames, extractedBlocksFileHumanNames)
 
